@@ -19,7 +19,8 @@
 1. Создать проект на [supabase.com](https://supabase.com).
 2. **SQL Editor** → выполнить [`supabase/schema.sql`](supabase/schema.sql) (таблицы, RLS, бакет `media`).
 3. **SQL Editor** → выполнить [`supabase/seed.sql`](supabase/seed.sql) (текущий контент).
-4. **Project Settings → API** → скопировать **Project URL** и **anon public key**.
+4. **SQL Editor** → выполнить [`supabase/002_case_pages.sql`](supabase/002_case_pages.sql) (слаги кейсов + таблица `case_blocks`).
+5. **Project Settings → API** → скопировать **Project URL** и **anon public key**.
 
 ### 2. Медиа в Storage
 Бакет `media` создаётся schema.sql. Внутри — папки `videos/` и `images/`.
@@ -64,3 +65,23 @@ npx serve .
 ## Управление контентом
 Пока без админки: кейсы и видео правятся в **Supabase → Table Editor**
 (таблицы `cases`, `videos`). Новые медиа — загрузкой в бакет `media`.
+
+## Наполнение кейса контентом
+Каждая карточка кейса ведёт на `case.html?slug=<slug>`. Шапка страницы (тег,
+метрика, заголовок, описание, KPI) берётся из таблицы `cases`. Тело страницы —
+строки таблицы **`case_blocks`**: по одной на блок, поле `data` (jsonb) зависит
+от `type`. Порядок задаёт `sort`.
+
+Медиа-пути — внутри бакета `media` (например, загрузи фото в `cases/ibox/1.jpg`).
+
+Пример наполнения кейса iBOX (`case_id` смотри в таблице `cases`):
+```sql
+insert into public.case_blocks (case_id, sort, type, data) values
+(1, 10, 'heading', '{"text": "Что было сделано"}'),
+(1, 20, 'text',    '{"text": "Первый абзац.\n\nВторой абзац."}'),
+(1, 30, 'image',   '{"path": "cases/ibox/1.jpg", "caption": "Подпись"}'),
+(1, 40, 'gallery', '{"images": ["cases/ibox/a.jpg", "cases/ibox/b.jpg"]}'),
+(1, 50, 'video',   '{"path": "videos/x.mp4", "poster": "posters/x.jpg"}'),
+(1, 60, 'quote',   '{"text": "Цитата", "author": "Автор"}');
+```
+Опционально: обложка кейса — поле `cases.cover_path` (путь к фото в `media`).

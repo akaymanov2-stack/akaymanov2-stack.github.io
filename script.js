@@ -27,17 +27,15 @@ function renderCases(rows) {
   const grid = document.getElementById('caseGrid');
   grid.innerHTML = rows.map(c => {
     const kpis = (c.kpis || []).map(k => `<span>${esc(k)}</span>`).join('');
-    const link = c.link_url
-      ? `<span><a class="case-link" href="${esc(c.link_url)}" target="_blank" rel="noopener">${esc(c.link_label || 'Подробнее →')}</a></span>`
-      : '';
     return `
-      <article class="card reveal" data-cat="${esc(c.category)}">
+      <a class="card reveal" href="case.html?slug=${encodeURIComponent(c.slug || '')}" data-cat="${esc(c.category)}">
         <span class="tag">${esc(c.tag)}</span>
         <div class="metric">${esc(c.metric)}</div>
         <h3>${esc(c.title)}</h3>
         <p>${esc(c.description)}</p>
-        <div class="kpis">${kpis}${link}</div>
-      </article>`;
+        <div class="kpis">${kpis}</div>
+        <span class="case-more">Открыть кейс →</span>
+      </a>`;
   }).join('');
   observeReveals(grid);
   wireFilters();

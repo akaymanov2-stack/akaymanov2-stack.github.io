@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кейс — Андрей Кайманов</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="bg-glow"></div>
+
+<nav>
+  <div class="wrap nav-in">
+    <a class="logo" href="index.html#top">АНДРЕЙ<span>&nbsp;КАЙМАНОВ</span></a>
+    <div class="nav-links">
+      <a href="index.html#cases">Кейсы</a>
+      <a href="index.html#industries">Отрасли</a>
+      <a href="index.html#video">Видео</a>
+      <a href="index.html#contact">Контакты</a>
+    </div>
+    <a class="nav-cta" href="mailto:akaymanov2@gmail.com">Написать</a>
+  </div>
+</nav>
+
+<main class="wrap case-wrap">
+  <a class="case-back" href="index.html#cases">← Все кейсы</a>
+  <article id="caseDetail" class="case-detail"></article>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div>© <span id="year"></span> Андрей Кайманов</div>
+    <div>Performance · E-com · Контент</div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script src="case.js"></script>
+</body>
+</html>
