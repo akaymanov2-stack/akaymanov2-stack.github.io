@@ -136,9 +136,13 @@ nav{
   background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
   padding:30px 28px;display:flex;flex-direction:column;gap:14px;
   text-decoration:none;color:inherit;cursor:pointer;
-  transition:transform .25s,background .25s,border-color .25s;
+  transition:transform .25s,background .25s,border-color .25s,box-shadow .25s;
 }
-.card:hover{transform:translateY(-4px);background:var(--card-hover);border-color:rgba(242,178,62,.28)}
+/* .reveal задаёт transform для появления и сбрасывает его в .on — поэтому
+   ховер-трансформ нужен со специфичностью выше .reveal.on, а переход — снаппи
+   (иначе карточка наследует медленный .6s от .reveal). */
+.card.reveal{transition:opacity .5s ease,transform .28s ease,background .25s ease,border-color .25s ease,box-shadow .25s ease}
+.card:hover,.card.reveal:hover{transform:translateY(-4px) scale(1.02);background:var(--card-hover);border-color:rgba(242,178,62,.28);box-shadow:0 16px 40px rgba(0,0,0,.3)}
 .card .case-more{color:var(--accent);font-weight:700;font-size:14px;transition:opacity .2s,transform .2s}
 @media(hover:hover){
   .card .case-more{opacity:0;transform:translateY(4px)}
