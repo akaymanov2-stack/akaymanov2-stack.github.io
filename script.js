@@ -57,18 +57,44 @@ function wireFilters() {
   });
 }
 
+// ----- Модальный плеер ---------------------------------------
+const modal = document.getElementById('videoModal');
+const modalVideo = document.getElementById('modalVideo');
+
+function openModal(url) {
+  modalVideo.src = url;
+  modal.classList.add('open');
+  modal.setAttribute('aria-hidden', 'false');
+  modalVideo.play().catch(() => {});
+}
+function closeModal() {
+  modal.classList.remove('open');
+  modal.setAttribute('aria-hidden', 'true');
+  modalVideo.pause();
+  modalVideo.removeAttribute('src');
+  modalVideo.load();
+}
+document.getElementById('modalClose').addEventListener('click', closeModal);
+modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
 // ----- Видео --------------------------------------------------
 function renderVideos(rows) {
   const grid = document.getElementById('vidGrid');
   grid.innerHTML = rows.map(v => {
-    const url = sb.storage.from('media').getPublicUrl(v.storage_path).data.publicUrl;
+    const videoUrl = sb.storage.from('media').getPublicUrl(v.storage_path).data.publicUrl;
+    const poster = v.poster_path
+      ? sb.storage.from('media').getPublicUrl(v.poster_path).data.publicUrl : '';
+    const bg = poster ? ` style="background-image:url('${esc(poster)}')"` : '';
     return `
-      <a class="vid reveal" href="${esc(url)}" target="_blank" rel="noopener">
-        <div class="play">▶</div>
-        <div><b>${esc(v.title)}</b><span>${esc(v.subtitle || '')}</span></div>
+      <a class="vid reveal" href="${esc(videoUrl)}" data-video="${esc(videoUrl)}" target="_blank" rel="noopener">
+        <div class="thumb"${bg}><div class="play">▶</div></div>
+        <div class="meta"><b>${esc(v.title)}</b><span>${esc(v.subtitle || '')}</span></div>
       </a>`;
   }).join('');
   observeReveals(grid);
+  grid.querySelectorAll('.vid').forEach(a =>
+    a.addEventListener('click', e => { e.preventDefault(); openModal(a.dataset.video); }));
 }
 
 // ----- Загрузка данных ---------------------------------------

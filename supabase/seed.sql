@@ -59,7 +59,7 @@ insert into public.cases (category, tag, metric, title, description, kpis, link_
 -- ----- Видео-креативы (3 шт.) -------------------------------
 -- storage_path — путь внутри бакета `media`. Файлы заливаются отдельно
 -- (см. README): roadscan.mp4, evo.mp4, tron.mp4.
-insert into public.videos (title, subtitle, storage_path, sort) values
-('RoadScan', 'продуктовый ролик',  'videos/roadscan.mp4', 10),
-('EVO',      'рекламный ролик',    'videos/evo.mp4',      20),
-('Tron',     'имиджевый креатив',  'videos/tron.mp4',     30);
+insert into public.videos (title, subtitle, storage_path, poster_path, sort) values
+('RoadScan', 'продуктовый ролик',  'videos/roadscan.mp4', 'posters/roadscan.jpg', 10),
+('EVO',      'рекламный ролик',    'videos/evo.mp4',      'posters/evo.jpg',      20),
+('Tron',     'имиджевый креатив',  'videos/tron.mp4',     'posters/tron.jpg',     30);
