@@ -18,6 +18,10 @@ const io = new IntersectionObserver(entries => {
 }, { threshold: .12 });
 const observeReveals = root => root.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
+// Статические блоки страницы (статы, «Проекты разных лет», контакты) —
+// наблюдаем сразу, независимо от загрузки данных из Supabase.
+observeReveals(document);
+
 // ----- Кейсы --------------------------------------------------
 function renderCases(rows) {
   const grid = document.getElementById('caseGrid');
