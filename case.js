@@ -37,6 +37,15 @@ function renderBlock(b) {
     case 'quote':
       return `<blockquote class="cb-quote">${esc(d.text)}`
         + (d.author ? `<cite>${esc(d.author)}</cite>` : '') + `</blockquote>`;
+    case 'metrics':
+      return `<div class="cb-metrics">`
+        + (d.items || []).map(m => `<div class="cb-metric"><b>${esc(m.value)}</b><span>${esc(m.label)}</span></div>`).join('')
+        + `</div>`;
+    case 'table':
+      return `<figure class="cb-table-wrap"><table class="cb-table">`
+        + (d.columns ? `<thead><tr>${d.columns.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>` : '')
+        + `<tbody>` + (d.rows || []).map(r => `<tr>${r.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('') + `</tbody>`
+        + `</table>` + (d.caption ? `<figcaption>${esc(d.caption)}</figcaption>` : '') + `</figure>`;
     default:
       return '';
   }

@@ -82,6 +82,15 @@ insert into public.case_blocks (case_id, sort, type, data) values
 (1, 30, 'image',   '{"path": "cases/ibox/1.jpg", "caption": "Подпись"}'),
 (1, 40, 'gallery', '{"images": ["cases/ibox/a.jpg", "cases/ibox/b.jpg"]}'),
 (1, 50, 'video',   '{"path": "videos/x.mp4", "poster": "posters/x.jpg"}'),
-(1, 60, 'quote',   '{"text": "Цитата", "author": "Автор"}');
+(1, 60, 'quote',   '{"text": "Цитата", "author": "Автор"}'),
+(1, 70, 'metrics', '{"items": [{"value": "537", "label": "конверсий"}, {"value": "324 ₽", "label": "CPA"}]}'),
+(1, 80, 'table',   '{"columns": ["Категория","Конверсии"], "rows": [["Выпечка","145"]], "caption": "Источник"}');
 ```
 Опционально: обложка кейса — поле `cases.cover_path` (путь к фото в `media`).
+
+**Типы блоков:** `heading`, `text` (абзацы через пустую строку), `image` (`path`,`caption`),
+`gallery` (`images[]`), `video` (`path`,`poster`,`caption`), `quote` (`text`,`author`),
+`metrics` (`items[]` из `value`+`label` — плитки-KPI), `table` (`columns[]`,`rows[][]`,`caption`).
+
+**Медиа кейса** — в бакет `media`, папка `cases/<slug>/` (например, скриншоты аналитики,
+дашборды PowerBI как блок `image`). Пример готового наполнения — [`supabase/003_valentine_case.sql`](supabase/003_valentine_case.sql).
