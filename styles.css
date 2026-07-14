@@ -290,10 +290,9 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;
 }
 .cb-quote cite{display:block;margin-top:10px;font-size:14px;font-style:normal;color:var(--muted);font-family:'Manrope',sans-serif}
 .cb-metrics{
-  display:grid;grid-template-columns:repeat(4,1fr);gap:1px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;
   background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
 }
-@media(max-width:640px){.cb-metrics{grid-template-columns:repeat(2,1fr)}}
 .cb-metric{background:var(--bg-soft);padding:22px 20px}
 .cb-metric b{
   display:block;font-family:'Unbounded',sans-serif;font-weight:700;font-size:clamp(20px,2.4vw,27px);
