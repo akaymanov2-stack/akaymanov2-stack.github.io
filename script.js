@@ -10,16 +10,27 @@ document.getElementById('year').textContent = new Date().getFullYear();
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-// Появление при скролле — наблюдатель переиспользуется для динамики
-const io = new IntersectionObserver(entries => {
-  entries.forEach(e => {
-    if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
-  });
-}, { threshold: .12 });
-const observeReveals = root => root.querySelectorAll('.reveal').forEach(el => io.observe(el));
+// Появление при скролле. Надёжно: фолбэк без IntersectionObserver.
+const revealNow = root => root.querySelectorAll('.reveal').forEach(el => el.classList.add('on'));
+let io = null;
+if ('IntersectionObserver' in window) {
+  io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
+}
+// Статика — появление по скроллу; если observer недоступен, показываем сразу.
+const observeReveals = root => {
+  if (!io) { revealNow(root); return; }
+  root.querySelectorAll('.reveal').forEach(el => io.observe(el));
+};
+// Динамический контент (кейсы, видео) показываем сразу после рендера — без
+// зависимости от скролла/observer'а (частая причина «пустых» блоков в мобильных
+// вебвью). Плавное появление — через кадр.
+const revealSoon = root => requestAnimationFrame(() => requestAnimationFrame(() => revealNow(root)));
 
-// Статические блоки страницы (статы, «Проекты разных лет», контакты) —
-// наблюдаем сразу, независимо от загрузки данных из Supabase.
+// Статические блоки страницы (статы, «Проекты разных лет», контакты).
 observeReveals(document);
 
 // ----- Кейсы --------------------------------------------------
@@ -37,7 +48,7 @@ function renderCases(rows) {
         <span class="case-more">Открыть кейс →</span>
       </a>`;
   }).join('');
-  observeReveals(grid);
+  revealSoon(grid);
   wireFilters();
 }
 
@@ -90,7 +101,7 @@ function renderVideos(rows) {
         <div class="meta"><b>${esc(v.title)}</b><span>${esc(v.subtitle || '')}</span></div>
       </a>`;
   }).join('');
-  observeReveals(grid);
+  revealSoon(grid);
   grid.querySelectorAll('.vid').forEach(a =>
     a.addEventListener('click', e => { e.preventDefault(); openModal(a.dataset.video); }));
 }
