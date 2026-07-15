@@ -184,6 +184,23 @@ nav{
 .ind li a{color:var(--text);text-decoration:none;border-bottom:1px solid rgba(242,178,62,.45);transition:color .2s,border-color .2s}
 .ind li a:hover{color:var(--accent);border-color:var(--accent)}
 
+/* SITES */
+.site-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+@media(max-width:820px){.site-grid{grid-template-columns:1fr}}
+.site{
+  display:block;text-decoration:none;background:var(--card);
+  border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;
+  transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.site:hover{transform:translateY(-4px);border-color:rgba(242,178,62,.3);box-shadow:0 14px 36px rgba(0,0,0,.28)}
+.site-shot{
+  aspect-ratio:16/10;background:var(--bg-soft) top center/cover no-repeat;
+  border-bottom:1px solid var(--border);
+}
+.site-meta{padding:15px 18px;display:flex;flex-direction:column;gap:2px}
+.site-meta b{color:var(--text);font-size:15px}
+.site-meta span{color:var(--muted);font-size:13px}
+
 /* VIDEO */
 .vid-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
 @media(max-width:820px){.vid-grid{grid-template-columns:1fr}}
