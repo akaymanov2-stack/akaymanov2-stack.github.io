@@ -46,6 +46,9 @@ function renderBlock(b) {
         + (d.columns ? `<thead><tr>${d.columns.map(c => `<th>${esc(c)}</th>`).join('')}</tr></thead>` : '')
         + `<tbody>` + (d.rows || []).map(r => `<tr>${r.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('') + `</tbody>`
         + `</table>` + (d.caption ? `<figcaption>${esc(d.caption)}</figcaption>` : '') + `</figure>`;
+    case 'longreads':
+      // Компонент рендерится императивно после вставки (см. монтирование в load)
+      return `<div class="cb-longreads" data-lr="1"></div>`;
     default:
       return '';
   }
@@ -89,5 +92,10 @@ async function load() {
     ${body}
     ${cta}
   `;
+
+  // Императивные компоненты внутри блоков (например, список лонгридов)
+  detail.querySelectorAll('[data-lr]').forEach(el => {
+    if (window.renderLongreads) window.renderLongreads(el);
+  });
 }
 load();
