@@ -181,6 +181,8 @@ nav{
 .ind ul{list-style:none}
 .ind li{color:var(--muted);font-size:13.5px;padding:5px 0;border-bottom:1px dashed rgba(255,255,255,.06)}
 .ind li:last-child{border-bottom:none}
+.ind li a{color:var(--text);text-decoration:none;border-bottom:1px solid rgba(242,178,62,.45);transition:color .2s,border-color .2s}
+.ind li a:hover{color:var(--accent);border-color:var(--accent)}
 
 /* VIDEO */
 .vid-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
