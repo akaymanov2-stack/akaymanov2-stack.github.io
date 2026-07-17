@@ -12,7 +12,10 @@ const paragraphs = t => String(t ?? '').split(/\n{2,}/)
   .map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
 
 const detail = document.getElementById('caseDetail');
-const slug = new URLSearchParams(location.search).get('slug');
+// Slug берём из ?slug= (старые ссылки) либо из пути /cases/<slug>/ (пререндер).
+const slug = new URLSearchParams(location.search).get('slug')
+  || (location.pathname.match(/\/cases\/([^/]+)\/?/) || [])[1]
+  || null;
 
 // ----- Рендер одного блока контента --------------------------
 function renderBlock(b) {
@@ -68,6 +71,11 @@ async function load() {
   if (!c) { detail.innerHTML = message('Кейс не найден'); return; }
 
   document.title = `${c.title} — Андрей Кайманов`;
+
+  // Канонический адрес кейса — чистый URL пререндера (против дублей ?slug=)
+  let canon = document.querySelector('link[rel="canonical"]');
+  if (!canon) { canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon); }
+  canon.href = `https://kaymanov.ru/cases/${c.slug}/`;
 
   const { data: blocks } = await sb.from('case_blocks')
     .select('*').eq('case_id', c.id).order('sort');

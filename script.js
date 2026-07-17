@@ -39,7 +39,7 @@ function renderCases(rows) {
   grid.innerHTML = rows.map(c => {
     const kpis = (c.kpis || []).map(k => `<span>${esc(k)}</span>`).join('');
     return `
-      <a class="card reveal" href="case.html?slug=${encodeURIComponent(c.slug || '')}" data-cat="${esc(c.category)}">
+      <a class="card reveal" href="/cases/${encodeURIComponent(c.slug || '')}/" data-cat="${esc(c.category)}">
         <span class="tag">${esc(c.tag)}</span>
         <div class="metric">${esc(c.metric)}</div>
         <h3>${esc(c.title)}</h3>
