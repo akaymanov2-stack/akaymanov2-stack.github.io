@@ -278,6 +278,28 @@ nav{
 .vid b{color:var(--text);font-size:15px;display:block}
 .vid span{color:var(--muted);font-size:13px}
 
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:12px;max-width:900px}
+.faq-item{
+  background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);
+  overflow:hidden;transition:border-color .2s;
+}
+.faq-item[open]{border-color:rgba(242,178,62,.3)}
+.faq-item summary{
+  list-style:none;cursor:pointer;padding:20px 24px;
+  font-size:16.5px;font-weight:700;color:var(--text);
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{
+  content:'+';font-size:24px;font-weight:400;color:var(--accent);
+  line-height:1;flex:0 0 auto;transition:transform .25s;
+}
+.faq-item[open] summary::after{transform:rotate(45deg)}
+.faq-item summary:hover{color:var(--accent-2)}
+.faq-a{padding:0 24px 20px;color:var(--muted);font-size:14.5px;line-height:1.6}
+.faq-a p{max-width:760px}
+
 /* BACK TO TOP */
 .to-top{
   position:fixed;right:28px;bottom:28px;z-index:90;
