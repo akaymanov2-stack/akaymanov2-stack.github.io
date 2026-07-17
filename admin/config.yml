@@ -2,8 +2,8 @@ backend:
   name: github
   repo: akaymanov2-stack/akaymanov2-stack.github.io
   branch: main
-  # base_url — адрес воркера авторизации (заполним после его деплоя):
-  # base_url: https://sveltia-auth.ТВОЙ-САБДОМЕН.workers.dev
+  # Адрес воркера авторизации (Cloudflare):
+  base_url: https://sveltia-cms-auth.akaymanov2.workers.dev
 
 site_url: https://kaymanov.ru
 display_url: https://kaymanov.ru
