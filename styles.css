@@ -284,6 +284,12 @@ nav{
   color:var(--accent-2);background:rgba(242,178,62,.08);border:1px solid rgba(242,178,62,.22);
   padding:5px 12px;border-radius:999px;
 }
+.blog-cover{
+  aspect-ratio:16/9;background:var(--bg-soft) center/cover no-repeat;
+  border-radius:12px;border:1px solid var(--border);margin:-4px 0 4px;
+}
+.post-cover{margin:22px 0 4px}
+.post-cover img{width:100%;border-radius:var(--radius);border:1px solid var(--border);display:block}
 .hero--blog{padding:88px 0 24px}
 .hero--blog .lead{max-width:680px}
 .blog-list{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}

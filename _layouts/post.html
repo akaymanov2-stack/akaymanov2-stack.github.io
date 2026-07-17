@@ -13,6 +13,9 @@ layout: default
         <span>Андрей Кайманов</span>
       </div>
     </header>
+    {% if page.image and page.image != '/og.png' %}
+    <figure class="post-cover"><img src="{{ page.image }}" alt="{{ page.title | escape }}"></figure>
+    {% endif %}
     <div class="post-body">
       {{ content }}
     </div>

@@ -18,6 +18,9 @@ permalink: /blog/
     <div class="blog-list">
       {% for post in site.posts %}
       <a class="blog-card" href="{{ post.url }}">
+        {% if post.image and post.image != '/og.png' %}
+        <div class="blog-cover" style="background-image:url('{{ post.image }}')"></div>
+        {% endif %}
         {% if post.tag %}<span class="tag">{{ post.tag }}</span>{% endif %}
         <h2>{{ post.title }}</h2>
         <p>{{ post.description | default: post.excerpt | strip_html | truncate: 160 }}</p>
