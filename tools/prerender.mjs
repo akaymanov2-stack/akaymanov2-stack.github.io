@@ -131,6 +131,7 @@ ${JSON.stringify(ld, null, 2)}
     <div class="nav-links">
       <a href="/#cases">Кейсы</a>
       <a href="/#industries">Отрасли</a>
+      <a href="/blog/">Блог</a>
       <a href="/#video">Видео</a>
       <a href="/#contact">Контакты</a>
     </div>
@@ -199,8 +200,8 @@ ${urls.map(u => `  <url>
   </url>`).join('\n')}
 </urlset>
 `;
-fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), sitemap);
-console.log(`sitemap.xml: ${urls.length} URL`);
+fs.writeFileSync(path.join(ROOT, 'sitemap-main.xml'), sitemap);
+console.log(`sitemap-main.xml: ${urls.length} URL (главная + кейсы; блог — в sitemap-blog.xml, генерит Jekyll)`);
 
 ws.close();
 process.exit(0);

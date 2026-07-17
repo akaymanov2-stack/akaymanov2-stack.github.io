@@ -1,0 +1,47 @@
+title: Андрей Кайманов — Performance-маркетинг и E-com
+description: >-
+  Блог о performance-маркетинге, продвижении на маркетплейсах, контекстной
+  рекламе и аналитике эффективности. Практика и разборы от Андрея Кайманова.
+url: https://kaymanov.ru
+lang: ru-RU
+timezone: Europe/Moscow
+
+author:
+  name: Андрей Кайманов
+  email: akaymanov2@gmail.com
+
+# Чистые URL статей: /blog/<slug>/
+permalink: /blog/:title/
+future: true
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-feed
+
+# RSS-лента блога
+feed:
+  path: /blog/feed.xml
+
+# Значения по умолчанию для постов
+defaults:
+  - scope:
+      path: "_posts"
+      type: posts
+    values:
+      layout: post
+      image: /og.png
+      seo:
+        type: BlogPosting
+
+# Не тащим в сборку служебные файлы
+exclude:
+  - tools/
+  - supabase/
+  - graphify-out/
+  - config.example.js
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor/
+
+# Jekyll сам генерит sitemap блога через sitemap-blog.xml (плагин sitemap не используем)

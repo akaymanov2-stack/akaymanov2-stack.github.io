@@ -278,6 +278,48 @@ nav{
 .vid b{color:var(--text);font-size:15px;display:block}
 .vid span{color:var(--muted);font-size:13px}
 
+/* BLOG */
+.hero--blog{padding:88px 0 24px}
+.hero--blog .lead{max-width:680px}
+.blog-list{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
+@media(max-width:760px){.blog-list{grid-template-columns:1fr}}
+.blog-card{
+  display:flex;flex-direction:column;gap:12px;text-decoration:none;
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:26px 24px;transition:transform .25s,border-color .25s,box-shadow .25s;
+}
+.blog-card:hover{transform:translateY(-4px) scale(1.01);border-color:rgba(242,178,62,.3);box-shadow:0 14px 36px rgba(0,0,0,.28)}
+.blog-card h2{font-size:20px;font-weight:800;line-height:1.3;color:var(--text)}
+.blog-card p{color:var(--muted);font-size:14.5px;line-height:1.55;flex:1}
+.blog-meta{display:flex;align-items:center;justify-content:space-between;color:var(--muted);font-size:13px;margin-top:4px}
+.blog-more{color:var(--accent);font-weight:700}
+
+/* POST */
+.post-wrap{max-width:760px;padding-top:36px;padding-bottom:64px}
+.post-head{margin:18px 0 30px}
+.post-head h1{font-size:clamp(26px,4vw,42px);line-height:1.15;margin:14px 0}
+.post-meta{display:flex;gap:10px;align-items:center;color:var(--muted);font-size:14px}
+.post-body{color:var(--text);font-size:17px;line-height:1.72}
+.post-body h2{font-family:'Unbounded',sans-serif;font-weight:600;font-size:24px;line-height:1.25;margin:38px 0 14px;color:var(--text)}
+.post-body h3{font-size:20px;font-weight:800;margin:28px 0 10px}
+.post-body p{margin:0 0 18px}
+.post-body ul,.post-body ol{margin:0 0 18px;padding-left:22px}
+.post-body li{margin:7px 0;color:var(--text)}
+.post-body a{color:var(--accent);text-decoration:none;border-bottom:1px solid rgba(242,178,62,.4)}
+.post-body a:hover{border-color:var(--accent)}
+.post-body blockquote{
+  margin:22px 0;padding:16px 22px;border-left:3px solid var(--accent);
+  background:var(--bg-soft);border-radius:0 12px 12px 0;color:var(--accent-2);
+  font-family:'Unbounded',sans-serif;font-size:16px;font-weight:500;
+}
+.post-body strong{color:var(--text);font-weight:700}
+.post-body img{max-width:100%;border-radius:var(--radius);border:1px solid var(--border);margin:22px 0}
+.post-cta{
+  margin-top:44px;padding:28px;text-align:center;
+  background:var(--bg-soft);border:1px solid var(--border);border-radius:var(--radius);
+}
+.post-cta p{color:var(--text);font-size:18px;font-weight:700;margin-bottom:16px}
+
 /* FAQ */
 .faq-list{display:flex;flex-direction:column;gap:12px;max-width:900px}
 .faq-item{

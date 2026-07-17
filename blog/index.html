@@ -1,0 +1,35 @@
+---
+layout: default
+title: Блог — Андрей Кайманов
+description: Статьи о performance-маркетинге, маркетплейсах, контекстной рекламе и аналитике эффективности.
+permalink: /blog/
+---
+<header class="hero hero--blog">
+  <div class="wrap">
+    <div class="kicker">Блог</div>
+    <h1>Практика performance-маркетинга</h1>
+    <p class="lead">Разборы, методики и опыт: как считать эффективность, растить продажи на маркетплейсах и в контексте, работать с контентом и инфлюэнсом.</p>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="wrap">
+    {% if site.posts.size > 0 %}
+    <div class="blog-list">
+      {% for post in site.posts %}
+      <a class="blog-card" href="{{ post.url }}">
+        {% if post.tag %}<span class="tag">{{ post.tag }}</span>{% endif %}
+        <h2>{{ post.title }}</h2>
+        <p>{{ post.description | default: post.excerpt | strip_html | truncate: 160 }}</p>
+        <div class="blog-meta">
+          <time datetime="{{ post.date | date_to_xmlschema }}">{{ post.date | date: "%-d %B %Y" }}</time>
+          <span class="blog-more">Читать →</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="sec-sub">Первые статьи скоро появятся.</p>
+    {% endif %}
+  </div>
+</section>
