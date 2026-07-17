@@ -1,0 +1,35 @@
+backend:
+  name: github
+  repo: akaymanov2-stack/akaymanov2-stack.github.io
+  branch: main
+  # base_url — адрес воркера авторизации (заполним после его деплоя):
+  # base_url: https://sveltia-auth.ТВОЙ-САБДОМЕН.workers.dev
+
+site_url: https://kaymanov.ru
+display_url: https://kaymanov.ru
+locale: ru
+
+# Куда складываются загруженные картинки
+media_folder: "assets/blog"
+public_folder: "/assets/blog"
+
+collections:
+  - name: posts
+    label: "Статьи блога"
+    label_singular: "Статью"
+    description: "Статьи, которые публикуются на kaymanov.ru/blog/"
+    folder: "_posts"
+    create: true
+    # Имя файла: 2026-07-20-latinskiy-slug.md → URL /blog/latinskiy-slug/
+    slug: "{{year}}-{{month}}-{{day}}-{{fields.slug}}"
+    extension: md
+    format: yaml-frontmatter
+    sortable_fields: [date, title]
+    fields:
+      - { name: title, label: "Заголовок", widget: string }
+      - { name: slug, label: "URL статьи (латиницей)", widget: string, hint: "Только латиница и дефисы. Например: kak-schitat-drr. Это часть адреса /blog/…/" }
+      - { name: tag, label: "Рубрика", widget: string, required: false, hint: "Например: Аналитика, Стратегия, Маркетплейсы, Контент" }
+      - { name: date, label: "Дата публикации", widget: datetime, date_format: "YYYY-MM-DD", time_format: "HH:mm", format: "YYYY-MM-DD HH:mm:ss ZZ" }
+      - { name: description, label: "Краткое описание", widget: text, hint: "1–2 предложения. Показывается в превью и в поисковой выдаче." }
+      - { name: image, label: "Обложка (необязательно)", widget: image, required: false, hint: "Картинка для превью и соцсетей" }
+      - { name: body, label: "Текст статьи", widget: markdown }
