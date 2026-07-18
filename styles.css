@@ -102,7 +102,7 @@ nav{
   border:1px solid var(--border);color:var(--text);text-decoration:none;font-weight:700;
   padding:15px 30px;border-radius:999px;font-size:15px;transition:border-color .2s,background .2s;
 }
-.btn-ghost:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.03)}
+.btn-ghost:hover{border-color:rgba(242,178,62,.4);background:rgba(242,178,62,.07);color:var(--accent-2)}
 
 /* STATS */
 .stats{
@@ -286,6 +286,7 @@ nav{
   transition:transform .25s,border-color .25s,box-shadow .25s;
 }
 .book-card:hover{transform:translateY(-4px);border-color:rgba(242,178,62,.3);box-shadow:0 14px 36px rgba(0,0,0,.28)}
+.book-cover-img{width:100%;display:block;border-bottom:1px solid var(--border)}
 .book-cover{aspect-ratio:3/4;background:var(--bg-soft) center/cover no-repeat;border-bottom:1px solid var(--border)}
 .book-cover--empty{display:flex;align-items:center;justify-content:center;color:var(--muted);font-family:'Unbounded',sans-serif;font-weight:600;letter-spacing:.12em;font-size:20px}
 .book-info{padding:18px 18px 20px;display:flex;flex-direction:column;gap:8px;flex:1}

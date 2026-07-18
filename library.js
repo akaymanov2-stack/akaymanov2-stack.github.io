@@ -19,7 +19,7 @@ function render(books) {
     const read = fileUrl(b.pdf_path);
     const dl = fileUrl(b.pdf_path, { download: true });
     const cover = b.cover_path
-      ? `<div class="book-cover" style="background-image:url('${esc(fileUrl(b.cover_path))}')"></div>`
+      ? `<img class="book-cover-img" src="${esc(fileUrl(b.cover_path))}" alt="${esc(b.title)}" loading="lazy">`
       : `<div class="book-cover book-cover--empty">PDF</div>`;
     const meta = [b.author, b.year].filter(Boolean).map(esc).join(' · ');
     const tags = (b.tags || []).length
