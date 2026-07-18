@@ -4,6 +4,7 @@ Disallow: /config.js
 Disallow: /config.example.js
 Disallow: /supabase/
 Disallow: /admin/
+Disallow: /library/add/
 
 Sitemap: https://kaymanov.ru/sitemap.xml
 Host: https://kaymanov.ru

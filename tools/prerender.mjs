@@ -134,6 +134,7 @@ ${JSON.stringify(ld, null, 2)}
       <a href="/#video">Видео</a>
       <a href="/#contact">Контакты</a>
       <a href="/blog/">Блог</a>
+      <a href="/library/">Библиотека</a>
     </div>
     <a class="nav-cta" href="mailto:akaymanov2@gmail.com">Написать</a>
   </div>
@@ -188,6 +189,7 @@ for (const c of cases) {
 const today = new Date().toISOString().slice(0, 10);
 const urls = [
   { loc: `${SITE}/`, priority: '1.0', freq: 'weekly' },
+  { loc: `${SITE}/library/`, priority: '0.6', freq: 'weekly' },
   ...done.map(c => ({ loc: `${SITE}/cases/${c.slug}/`, priority: '0.8', freq: 'monthly' }))
 ];
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

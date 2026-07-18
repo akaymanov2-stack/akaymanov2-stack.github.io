@@ -3,14 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Кейс — Андрей Кайманов</title>
+<title>Библиотека — Андрей Кайманов</title>
+<meta name="description" content="Подборка книг в PDF, которые я читаю и рекомендую: маркетинг, бизнес, аналитика и не только.">
+<link rel="canonical" href="https://kaymanov.ru/library/">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="mask-icon" href="/favicon.svg" color="#f2b23e">
+<meta name="theme-color" content="#0b0c10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<link rel="mask-icon" href="favicon.svg" color="#f2b23e">
-<meta name="theme-color" content="#0b0c10">
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="/styles.css">
 
 <!-- Yandex.Metrika counter -->
 <script type="text/javascript">
@@ -20,7 +22,6 @@
         for (var j = 0; j < document.scripts.length; j++) {if (document.scripts[j].src === r) { return; }}
         k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)
     })(window, document,'script','https://mc.yandex.ru/metrika/tag.js?id=110815005', 'ym');
-
     ym(110815005, 'init', {ssr:true, webvisor:true, clickmap:true, ecommerce:"dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce:true, trackLinks:true});
 </script>
 <noscript><div><img src="https://mc.yandex.ru/watch/110815005" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
@@ -31,12 +32,12 @@
 
 <nav>
   <div class="wrap nav-in">
-    <a class="logo" href="index.html#top">АНДРЕЙ<span>&nbsp;КАЙМАНОВ</span></a>
+    <a class="logo" href="/#top">АНДРЕЙ<span>&nbsp;КАЙМАНОВ</span></a>
     <div class="nav-links">
-      <a href="index.html#cases">Кейсы</a>
-      <a href="index.html#industries">Отрасли</a>
-      <a href="index.html#video">Видео</a>
-      <a href="index.html#contact">Контакты</a>
+      <a href="/#cases">Кейсы</a>
+      <a href="/#industries">Отрасли</a>
+      <a href="/#video">Видео</a>
+      <a href="/#contact">Контакты</a>
       <a href="/blog/">Блог</a>
       <a href="/library/">Библиотека</a>
     </div>
@@ -44,10 +45,19 @@
   </div>
 </nav>
 
-<main class="wrap case-wrap">
-  <a class="case-back" href="index.html#cases">← Все кейсы</a>
-  <article id="caseDetail" class="case-detail"></article>
-</main>
+<header class="hero hero--blog">
+  <div class="wrap">
+    <div class="kicker">Библиотека</div>
+    <h1>Книги, которые стоит прочитать</h1>
+    <p class="lead">Подборка книг в PDF по маркетингу, бизнесу и смежным темам — то, что читаю сам и рекомендую. Открывай онлайн или скачивай.</p>
+  </div>
+</header>
+
+<section class="sec">
+  <div class="wrap">
+    <div class="book-grid" id="bookGrid"><p class="sec-sub">Загрузка…</p></div>
+  </div>
+</section>
 
 <footer>
   <div class="wrap">
@@ -59,9 +69,8 @@
 <button class="to-top" id="toTop" aria-label="Наверх" title="Наверх">↑</button>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="config.js"></script>
-<script src="longreads.js"></script>
-<script src="case.js"></script>
-<script src="backtop.js"></script>
+<script src="/config.js"></script>
+<script src="/library.js"></script>
+<script src="/backtop.js"></script>
 </body>
 </html>
