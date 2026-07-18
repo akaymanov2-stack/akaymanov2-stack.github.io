@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex">
-<title>Загрузка книги — Библиотека</title>
+<title>Управление библиотекой</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <meta name="theme-color" content="#0b0c10">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,12 +25,12 @@
   </div>
 </nav>
 
-<main class="wrap" style="max-width:640px;padding:48px 0 80px">
+<main class="wrap" style="max-width:680px;padding:48px 0 80px">
 
   <!-- Вход -->
   <section id="loginBox" class="upload-box" hidden>
     <h1>Вход</h1>
-    <p class="sec-sub">Загружать книги может только владелец сайта.</p>
+    <p class="sec-sub">Управлять библиотекой может только владелец сайта.</p>
     <form id="loginForm" class="upload-form">
       <label>Email<input type="email" id="email" required autocomplete="username"></label>
       <label>Пароль<input type="password" id="password" required autocomplete="current-password"></label>
@@ -39,21 +39,40 @@
     </form>
   </section>
 
-  <!-- Форма загрузки -->
-  <section id="uploadBox" class="upload-box" hidden>
-    <h1>Добавить книгу</h1>
-    <p class="sec-sub">PDF и обложка загрузятся в хранилище, книга появится в библиотеке.</p>
-    <form id="bookForm" class="upload-form">
-      <label>Название *<input type="text" id="title" required></label>
-      <label>Автор<input type="text" id="author"></label>
-      <label>Год<input type="number" id="bookYear" min="0" max="2100"></label>
-      <label>Описание<textarea id="description" rows="3"></textarea></label>
-      <label>Теги (через запятую)<input type="text" id="tags" placeholder="маркетинг, аналитика"></label>
-      <label>Обложка (изображение, необязательно)<input type="file" id="cover" accept="image/*"></label>
-      <label>Файл книги (PDF) *<input type="file" id="pdf" accept="application/pdf" required></label>
-      <button class="btn-main" type="submit" id="submitBtn">Загрузить книгу</button>
-      <p class="upload-msg" id="uploadMsg"></p>
-    </form>
+  <!-- Управление -->
+  <section id="adminBox" hidden>
+
+    <!-- Список книг -->
+    <div id="listView">
+      <div class="admin-head">
+        <h1>Мои книги</h1>
+        <button class="btn-main" id="newBookBtn" type="button">+ Добавить книгу</button>
+      </div>
+      <p class="sec-sub">Нажми «Редактировать», чтобы поменять данные или добавить обложку.</p>
+      <div class="admin-books" id="adminBooks"><p class="sec-sub">Загрузка…</p></div>
+    </div>
+
+    <!-- Форма создания/редактирования -->
+    <div id="formView" hidden>
+      <div class="admin-head">
+        <h1 id="formTitle">Добавить книгу</h1>
+        <button class="btn-ghost" id="backBtn" type="button">← К списку</button>
+      </div>
+      <form id="bookForm" class="upload-form">
+        <label>Название *<input type="text" id="title" required></label>
+        <label>Автор<input type="text" id="author"></label>
+        <label>Год<input type="number" id="bookYear" min="0" max="2100"></label>
+        <label>Описание<textarea id="description" rows="3"></textarea></label>
+        <label>Теги (через запятую)<input type="text" id="tags" placeholder="маркетинг, аналитика"></label>
+        <div class="current-file" id="currentCover" hidden></div>
+        <label>Обложка (изображение)<input type="file" id="cover" accept="image/*"><span class="field-hint" id="coverHint"></span></label>
+        <div class="current-file" id="currentPdf" hidden></div>
+        <label>Файл книги (PDF)<input type="file" id="pdf" accept="application/pdf"><span class="field-hint" id="pdfHint"></span></label>
+        <button class="btn-main" type="submit" id="submitBtn">Сохранить</button>
+        <p class="upload-msg" id="uploadMsg"></p>
+      </form>
+    </div>
+
   </section>
 
   <p id="bootMsg" class="sec-sub">Загрузка…</p>
