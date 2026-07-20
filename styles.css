@@ -466,7 +466,10 @@ button.nav-cta{font-family:inherit;cursor:pointer}
 .contact-links{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
 
 footer{border-top:1px solid var(--border);padding:28px 0;margin-top:40px}
-footer .wrap{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+footer .wrap{display:flex;justify-content:space-between;gap:12px 20px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+.foot-contacts{display:flex;gap:16px;flex-wrap:wrap;align-items:center}
+.foot-contacts a{color:var(--muted);text-decoration:none;border-bottom:1px solid transparent;transition:color .2s,border-color .2s}
+.foot-contacts a:hover{color:var(--accent);border-color:rgba(242,178,62,.4)}
 
 /* REVEAL */
 .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
