@@ -279,6 +279,13 @@ nav{
 .vid b{color:var(--text);font-size:15px;display:block}
 .vid span{color:var(--muted);font-size:13px}
 
+/* AUDIT (непубличная страница /audit/) */
+.audit-price{font-family:'Unbounded',sans-serif;font-weight:700;font-size:26px;
+  background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;margin:4px 0 2px}
+.audit-term{color:var(--muted);font-size:13px;margin-bottom:12px}
+.ind--featured{border-color:rgba(242,178,62,.4);box-shadow:0 12px 32px rgba(0,0,0,.25)}
+.ind .btn-main,.ind .btn-ghost{margin-top:14px;display:inline-block;padding:10px 22px;font-size:14px}
+
 /* LIBRARY */
 .book-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:20px}
 .book-card{
