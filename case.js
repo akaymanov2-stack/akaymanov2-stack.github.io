@@ -1,21 +1,71 @@
 // ============================================================
-//  Страница кейса: читает ?slug=, тянет кейс + блоки из Supabase
+//  Страница кейса: читает slug, тянет кейс + блоки из Supabase.
+//
+//  Страницы /cases/<slug>/ пререндерены — контент в HTML уже есть.
+//  Поэтому файл устроен так, чтобы сбой сети никогда не ухудшал страницу:
+//  интерактив готовой разметки поднимается сразу, а обновление из БД
+//  либо проходит, либо тихо пропускается.
 // ============================================================
-const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-document.getElementById('year').textContent = new Date().getFullYear();
+const detail = document.getElementById('caseDetail');
+// Пререндер отличаем по тому, что в контейнере уже есть разметка.
+const hasPrerender = !!(detail && detail.children.length);
+
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const pub = path => path ? sb.storage.from('media').getPublicUrl(path).data.publicUrl : '';
+// Публичный URL в сторадже — та же склейка, что делает storage-js.
+const pub = path => path
+  ? encodeURI(`${window.SUPABASE_URL}/storage/v1/object/public/media/${path}`) : '';
 // Многострочный текст → абзацы (пустая строка разделяет абзацы)
 const paragraphs = t => String(t ?? '').split(/\n{2,}/)
   .map(p => `<p>${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
 
-const detail = document.getElementById('caseDetail');
 // Slug берём из ?slug= (старые ссылки) либо из пути /cases/<slug>/ (пререндер).
 const slug = new URLSearchParams(location.search).get('slug')
   || (location.pathname.match(/\/cases\/([^/]+)\/?/) || [])[1]
   || null;
+
+// Императивные компоненты внутри блоков (список лонгридов с кнопкой
+// «Смотреть больше»). Вызываем и по пререндеру, и после перерисовки: иначе
+// при недоступном Supabase кнопка в уже готовой разметке остаётся мёртвой.
+function mountBlocks() {
+  if (!detail) return;
+  detail.querySelectorAll('[data-lr]').forEach(el => {
+    if (window.renderLongreads) window.renderLongreads(el);
+  });
+}
+mountBlocks();
+
+let sb = null;
+try {
+  if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+    sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+  }
+} catch (e) {
+  console.error('Supabase init failed:', e);
+}
+
+// Запрос с таймаутом и повторами — сеть до Supabase нестабильна.
+async function fetchRows(build, { tries = 3, timeout = 10000 } = {}) {
+  let last = null;
+  for (let i = 0; i < tries; i++) {
+    const ac = new AbortController();
+    const t = setTimeout(() => ac.abort(), timeout);
+    try {
+      const { data, error } = await build().abortSignal(ac.signal);
+      if (!error) return { data: data || [] };
+      last = error;
+    } catch (e) {
+      last = e;
+    } finally {
+      clearTimeout(t);
+    }
+    if (i < tries - 1) await new Promise(r => setTimeout(r, 600 * (i + 1)));
+  }
+  return { error: last };
+}
 
 // ----- Рендер одного блока контента --------------------------
 function renderBlock(b) {
@@ -50,7 +100,7 @@ function renderBlock(b) {
         + `<tbody>` + (d.rows || []).map(r => `<tr>${r.map(cell => `<td>${esc(cell)}</td>`).join('')}</tr>`).join('') + `</tbody>`
         + `</table>` + (d.caption ? `<figcaption>${esc(d.caption)}</figcaption>` : '') + `</figure>`;
     case 'longreads':
-      // Компонент рендерится императивно после вставки (см. монтирование в load)
+      // Компонент рендерится императивно после вставки (см. mountBlocks)
       return `<div class="cb-longreads" data-lr="1"></div>`;
     default:
       return '';
@@ -59,16 +109,25 @@ function renderBlock(b) {
 
 function message(title, withBack = true) {
   return `<div class="case-empty"><h1>${esc(title)}</h1>`
-    + (withBack ? `<a class="btn-main" href="index.html#cases">← Ко всем кейсам</a>` : '') + `</div>`;
+    + (withBack ? `<a class="btn-main" href="/#cases">← Ко всем кейсам</a>` : '') + `</div>`;
+}
+
+// Заглушку показываем только там, где показывать больше нечего: на
+// пререндеренной странице готовый контент важнее сообщения об ошибке.
+function bail(title, err) {
+  if (err) console.error(`${title}:`, err.message || err);
+  if (!hasPrerender && detail) detail.innerHTML = message(title);
 }
 
 async function load() {
-  if (!slug) { detail.innerHTML = message('Кейс не указан'); return; }
+  if (!detail) return;
+  if (!slug) { bail('Кейс не указан'); return; }
+  if (!sb) { bail('Не удалось загрузить кейс', 'Supabase SDK недоступен'); return; }
 
-  const { data: rows, error } = await sb.from('cases').select('*').eq('slug', slug).limit(1);
-  if (error) { detail.innerHTML = message('Не удалось загрузить кейс'); return; }
-  const c = rows && rows[0];
-  if (!c) { detail.innerHTML = message('Кейс не найден'); return; }
+  const res = await fetchRows(() => sb.from('cases').select('*').eq('slug', slug).limit(1));
+  if (res.error) { bail('Не удалось загрузить кейс', res.error); return; }
+  const c = res.data[0];
+  if (!c) { bail('Кейс не найден'); return; }
 
   document.title = `${c.title} — Андрей Кайманов`;
 
@@ -77,14 +136,20 @@ async function load() {
   if (!canon) { canon = document.createElement('link'); canon.rel = 'canonical'; document.head.appendChild(canon); }
   canon.href = `https://kaymanov.ru/cases/${c.slug}/`;
 
-  const { data: blocks } = await sb.from('case_blocks')
-    .select('*').eq('case_id', c.id).order('sort');
+  const blocksRes = await fetchRows(() => sb.from('case_blocks')
+    .select('*').eq('case_id', c.id).order('sort'));
+  // Блоки не пришли, а готовая разметка есть — оставляем её нетронутой.
+  if (blocksRes.error && hasPrerender) {
+    console.error('Ошибка загрузки блоков кейса:', blocksRes.error.message || blocksRes.error);
+    return;
+  }
+  const blocks = blocksRes.data || [];
 
   const cover = c.cover_path
     ? `<div class="case-cover" style="background-image:url('${esc(pub(c.cover_path))}')"></div>` : '';
   const kpis = (c.kpis || []).length
     ? `<div class="kpis">${c.kpis.map(k => `<span>${esc(k)}</span>`).join('')}</div>` : '';
-  const body = (blocks && blocks.length)
+  const body = blocks.length
     ? `<div class="case-body">${blocks.map(renderBlock).join('')}</div>`
     : `<div class="case-empty">Подробное описание кейса скоро появится.</div>`;
   const cta = c.link_url
@@ -101,9 +166,6 @@ async function load() {
     ${cta}
   `;
 
-  // Императивные компоненты внутри блоков (например, список лонгридов)
-  detail.querySelectorAll('[data-lr]').forEach(el => {
-    if (window.renderLongreads) window.renderLongreads(el);
-  });
+  mountBlocks();
 }
 load();

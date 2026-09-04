@@ -1,41 +1,74 @@
 // ============================================================
-//  Supabase client + рендер контента из БД
+//  Главная: рендер кейсов и видео из Supabase.
+//
+//  Файл намеренно не падает целиком: сеть до Supabase нестабильна
+//  (периодические таймауты), поэтому инициализация клиента защищена,
+//  запросы идут с таймаутом и повторами, а показ блоков страницы живёт
+//  в отдельном reveal.js и от этого файла не зависит.
 // ============================================================
-const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 
 // Год в футере
-document.getElementById('year').textContent = new Date().getFullYear();
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // Экранирование текста из БД перед вставкой в разметку
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-// Появление при скролле. Надёжно: фолбэк без IntersectionObserver.
-const revealNow = root => root.querySelectorAll('.reveal').forEach(el => el.classList.add('on'));
-let io = null;
-if ('IntersectionObserver' in window) {
-  io = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) { e.target.classList.add('on'); io.unobserve(e.target); }
-    });
-  }, { threshold: 0, rootMargin: '0px 0px -8% 0px' });
-}
-// Статика — появление по скроллу; если observer недоступен, показываем сразу.
-const observeReveals = root => {
-  if (!io) { revealNow(root); return; }
-  root.querySelectorAll('.reveal').forEach(el => io.observe(el));
-};
-// Динамический контент (кейсы, видео) показываем сразу после рендера — без
-// зависимости от скролла/observer'а (частая причина «пустых» блоков в мобильных
-// вебвью). Плавное появление — через кадр.
-const revealSoon = root => requestAnimationFrame(() => requestAnimationFrame(() => revealNow(root)));
+// Показ блоков — из reveal.js. Фолбэки на случай, если он не загрузился.
+const revealIn = root => (window.revealIn || (r => r.querySelectorAll('.reveal')
+  .forEach(el => el.classList.add('on'))))(root);
 
-// Статические блоки страницы (статы, «Проекты разных лет», контакты).
-observeReveals(document);
+// Клиент Supabase. Если библиотека не поднялась — работаем без неё:
+// статика страницы уже отрисована, динамические блоки покажут заглушку.
+let sb = null;
+try {
+  if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+    sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+  }
+} catch (e) {
+  console.error('Supabase init failed:', e);
+}
+
+// Публичный URL файла в сторадже. Это просто склейка пути, поэтому
+// считаем её сами и не зависим от того, поднялся ли клиент.
+// Кодирование через encodeURI — ровно как в storage-js getPublicUrl,
+// чтобы адреса совпали с теми, что работали раньше.
+const pub = path => path
+  ? encodeURI(`${window.SUPABASE_URL}/storage/v1/object/public/media/${path}`)
+  : '';
+
+// ----- Запрос с таймаутом и повторами -------------------------
+// Без таймаута зависший запрос оставляет блок пустым навсегда.
+function withTimeout(query, ms) {
+  const ac = new AbortController();
+  const t = setTimeout(() => ac.abort(), ms);
+  return Promise.resolve(query.abortSignal(ac.signal)).finally(() => clearTimeout(t));
+}
+
+async function fetchRows(build, { tries = 3, timeout = 10000 } = {}) {
+  let last = null;
+  for (let i = 0; i < tries; i++) {
+    try {
+      const { data, error } = await withTimeout(build(), timeout);
+      if (!error) return { data: data || [] };
+      last = error;
+    } catch (e) {
+      last = e;
+    }
+    if (i < tries - 1) await new Promise(r => setTimeout(r, 600 * (i + 1)));
+  }
+  return { error: last };
+}
+
+function fallback(el, text) {
+  if (el) el.innerHTML = `<p class="sec-sub">${esc(text)}</p>`;
+}
 
 // ----- Кейсы --------------------------------------------------
 function renderCases(rows) {
   const grid = document.getElementById('caseGrid');
+  if (!grid) return;
   grid.innerHTML = rows.map(c => {
     const kpis = (c.kpis || []).map(k => `<span>${esc(k)}</span>`).join('');
     return `
@@ -48,52 +81,63 @@ function renderCases(rows) {
         <span class="case-more">Открыть кейс →</span>
       </a>`;
   }).join('');
-  revealSoon(grid);
-  wireFilters();
+  revealIn(grid);
+  applyFilter();
 }
 
 // ----- Фильтр кейсов -----------------------------------------
+// Обработчики вешаются один раз на статичную разметку и ищут карточки
+// в момент клика — поэтому кнопки живы независимо от того, успел ли
+// отрисоваться грид.
+let activeFilter = 'all';
+function applyFilter() {
+  document.querySelectorAll('#caseGrid .card').forEach(c =>
+    c.classList.toggle('hidden', activeFilter !== 'all' && c.dataset.cat !== activeFilter));
+}
 function wireFilters() {
   const btns = document.querySelectorAll('.filters button');
-  const cards = document.querySelectorAll('#caseGrid .card');
-  btns.forEach(b => {
-    b.onclick = () => {
-      btns.forEach(x => x.classList.remove('active'));
-      b.classList.add('active');
-      const f = b.dataset.f;
-      cards.forEach(c => c.classList.toggle('hidden', f !== 'all' && c.dataset.cat !== f));
-    };
-  });
+  btns.forEach(b => b.addEventListener('click', () => {
+    btns.forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    activeFilter = b.dataset.f;
+    applyFilter();
+  }));
 }
+wireFilters();
 
 // ----- Модальный плеер ---------------------------------------
 const modal = document.getElementById('videoModal');
 const modalVideo = document.getElementById('modalVideo');
+const modalClose = document.getElementById('modalClose');
 
 function openModal(url) {
+  if (!modal || !modalVideo) return;
   modalVideo.src = url;
   modal.classList.add('open');
   modal.setAttribute('aria-hidden', 'false');
   modalVideo.play().catch(() => {});
 }
 function closeModal() {
+  if (!modal || !modalVideo) return;
   modal.classList.remove('open');
   modal.setAttribute('aria-hidden', 'true');
   modalVideo.pause();
   modalVideo.removeAttribute('src');
   modalVideo.load();
 }
-document.getElementById('modalClose').addEventListener('click', closeModal);
-modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+if (modalClose) modalClose.addEventListener('click', closeModal);
+if (modal) {
+  modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+}
 
 // ----- Видео --------------------------------------------------
 function renderVideos(rows) {
   const grid = document.getElementById('vidGrid');
+  if (!grid) return;
   grid.innerHTML = rows.map(v => {
-    const videoUrl = sb.storage.from('media').getPublicUrl(v.storage_path).data.publicUrl;
-    const poster = v.poster_path
-      ? sb.storage.from('media').getPublicUrl(v.poster_path).data.publicUrl : '';
+    const videoUrl = pub(v.storage_path);
+    const poster = pub(v.poster_path);
     const bg = poster ? ` style="background-image:url('${esc(poster)}')"` : '';
     return `
       <a class="vid reveal" href="${esc(videoUrl)}" data-video="${esc(videoUrl)}" target="_blank" rel="noopener">
@@ -101,20 +145,34 @@ function renderVideos(rows) {
         <div class="meta"><b>${esc(v.title)}</b><span>${esc(v.subtitle || '')}</span></div>
       </a>`;
   }).join('');
-  revealSoon(grid);
+  revealIn(grid);
   grid.querySelectorAll('.vid').forEach(a =>
     a.addEventListener('click', e => { e.preventDefault(); openModal(a.dataset.video); }));
 }
 
 // ----- Загрузка данных ---------------------------------------
 async function load() {
+  if (!sb) {
+    console.error('Supabase SDK недоступен — динамические блоки не загружены');
+    fallback(document.getElementById('caseGrid'), 'Кейсы временно недоступны. Обновите страницу.');
+    fallback(document.getElementById('vidGrid'), 'Видео временно недоступны. Обновите страницу.');
+    return;
+  }
   const [cases, videos] = await Promise.all([
-    sb.from('cases').select('*').order('sort'),
-    sb.from('videos').select('*').order('sort'),
+    fetchRows(() => sb.from('cases').select('*').order('sort')),
+    fetchRows(() => sb.from('videos').select('*').order('sort')),
   ]);
-  if (cases.error)  console.error('Ошибка загрузки кейсов:', cases.error.message);
-  else              renderCases(cases.data);
-  if (videos.error) console.error('Ошибка загрузки видео:', videos.error.message);
-  else              renderVideos(videos.data);
+  if (cases.error) {
+    console.error('Ошибка загрузки кейсов:', cases.error.message || cases.error);
+    fallback(document.getElementById('caseGrid'), 'Не удалось загрузить кейсы. Обновите страницу.');
+  } else {
+    renderCases(cases.data);
+  }
+  if (videos.error) {
+    console.error('Ошибка загрузки видео:', videos.error.message || videos.error);
+    fallback(document.getElementById('vidGrid'), 'Не удалось загрузить видео. Обновите страницу.');
+  } else {
+    renderVideos(videos.data);
+  }
 }
 load();

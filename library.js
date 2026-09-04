@@ -1,8 +1,19 @@
 // ============================================================
 //  Публичная библиотека: читает список книг из Supabase и рендерит
 // ============================================================
-const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
-document.getElementById('year').textContent = new Date().getFullYear();
+// Клиент защищён try/catch: падение библиотеки не должно ронять весь файл
+// и оставлять страницу с пустым гридом без объяснения.
+let sb = null;
+try {
+  if (window.supabase && window.SUPABASE_URL && window.SUPABASE_ANON_KEY) {
+    sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
+  }
+} catch (e) {
+  console.error('Supabase init failed:', e);
+}
+
+const yearEl = document.getElementById('year');
+if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c =>
   ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -41,15 +52,30 @@ function render(books) {
   }).join('');
 }
 
+function fail(msg, err) {
+  console.error(msg, err || '');
+  const grid = document.getElementById('bookGrid');
+  if (grid) grid.innerHTML = '<p class="sec-sub">Не удалось загрузить библиотеку. Обновите страницу.</p>';
+}
+
 async function load() {
-  const { data, error } = await sb.from('books')
-    .select('*').order('sort').order('created_at', { ascending: false });
-  if (error) {
-    document.getElementById('bookGrid').innerHTML =
-      '<p class="sec-sub">Не удалось загрузить библиотеку.</p>';
-    console.error('books load error:', error.message);
-    return;
+  if (!sb) { fail('Supabase SDK недоступен'); return; }
+  // Сеть до Supabase нестабильна — запрос с таймаутом и повторами.
+  for (let i = 0; i < 3; i++) {
+    const ac = new AbortController();
+    const t = setTimeout(() => ac.abort(), 10000);
+    try {
+      const { data, error } = await sb.from('books')
+        .select('*').order('sort').order('created_at', { ascending: false })
+        .abortSignal(ac.signal);
+      if (!error) { render(data || []); return; }
+      if (i === 2) { fail('books load error:', error.message); return; }
+    } catch (e) {
+      if (i === 2) { fail('books load error:', e); return; }
+    } finally {
+      clearTimeout(t);
+    }
+    await new Promise(r => setTimeout(r, 600 * (i + 1)));
   }
-  render(data || []);
 }
 load();

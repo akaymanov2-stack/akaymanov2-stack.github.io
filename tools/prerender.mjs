@@ -101,6 +101,7 @@ function pageHtml(c, innerHtml) {
 <meta name="twitter:title" content="${esc(c.title)}">
 <meta name="twitter:description" content="${esc(desc)}">
 <meta name="twitter:image" content="${esc(ogImg)}">
+<link rel="preconnect" href="${SUPABASE_URL}" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@500;600;700&display=swap" rel="stylesheet">
@@ -159,7 +160,7 @@ ${JSON.stringify(ld, null, 2)}
 
 <button class="to-top" id="toTop" aria-label="Наверх" title="Наверх">↑</button>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="/assets/vendor/supabase-js-2.115.0.min.js"></script>
 <script src="/config.js"></script>
 <script src="/longreads.js"></script>
 <script src="/case.js"></script>

@@ -2,6 +2,15 @@
 //  Управление библиотекой: вход (Supabase Auth), список книг,
 //  создание/редактирование/удаление. Доступ ограничен RLS.
 // ============================================================
+// Без библиотеки админка работать не может — сообщаем об этом явно,
+// вместо молчаливой ошибки в консоли и мёртвой страницы.
+if (!window.supabase) {
+  document.addEventListener('DOMContentLoaded', () => {
+    document.body.insertAdjacentHTML('afterbegin',
+      '<p class="sec-sub" style="padding:16px">Не удалось загрузить Supabase SDK. Обновите страницу.</p>');
+  });
+  throw new Error('Supabase SDK не загружен');
+}
 const sb = window.supabase.createClient(window.SUPABASE_URL, window.SUPABASE_ANON_KEY);
 const $ = id => document.getElementById(id);
 

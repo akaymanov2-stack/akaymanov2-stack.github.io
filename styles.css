@@ -479,12 +479,17 @@ footer .wrap{display:flex;justify-content:space-between;gap:12px 20px;flex-wrap:
 .foot-contacts a:hover{color:var(--accent);border-color:rgba(242,178,62,.4)}
 
 /* REVEAL */
-.reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
-.reveal.on{opacity:1;transform:none}
+/* Стартовое «спрятанное» состояние включает только .has-js (ставится в
+   reveal.js). Без этого класса — если скрипт заблокирован, не загрузился
+   или JS отключён — контент виден сразу, а не остаётся прозрачным.
+   Обёртка :where() держит специфичность нулевой, чтобы каскад ниже
+   (ховеры карточек и т.п.) работал ровно как раньше. */
+:where(.has-js) .reveal{opacity:0;transform:translateY(22px);transition:opacity .6s ease,transform .6s ease}
+:where(.has-js) .reveal.on{opacity:1;transform:none}
 /* На мобильных отключаем анимацию появления по скроллу — контент сразу на месте,
    без «подъезжания» вверх (особенно заметного в горизонтальных каруселях). */
 @media(max-width:820px){
-  .reveal{opacity:1;transform:none;transition:none}
+  :where(.has-js) .reveal{opacity:1;transform:none;transition:none}
 }
 
 /* CASE PAGE */
